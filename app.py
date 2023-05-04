@@ -12,7 +12,7 @@ def solve_sudoku_route():
     
     sudoku = data['data']
     puzzle = startSolver(sudoku)
-    
+   
     return puzzle
 
 
