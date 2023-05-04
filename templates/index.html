@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+    <title>Sudoku Solver</title>
+    <link rel="stylesheet" href="./style.css"/>
+</head>
+
+<script>
+    var alreadyClicked  = false;
+    
+    function submitHandeler(ev){
+         const form = document.getElementById('formdata');
+         const mat = []
+         for(let node of form.childNodes){
+            let row = []
+            for(let ele of node.childNodes){
+                if(!ele.value) continue
+                row.push(Number(ele.value))
+                
+            }
+            if(row.length == 0) continue
+            mat.push(row)
+         }
+        console.log(mat)
+        function callStatk(value,ele,i,j){
+            setTimeout(
+                ()=>{
+
+                    ele.value = value
+                },(i*10+j +1)*500
+            )
+        }
+        fetch("http://127.0.0.1:5000/solvesudoku", {
+     
+            // Adding method type
+            method: "POST",
+             
+            // Adding body or contents to send
+            body: JSON.stringify({
+               data:mat
+            }),
+             
+            // Adding headers to the request
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then(res=>res.json())
+        .then(data =>{
+            let i =0 ;
+            for(let node of form.childNodes){
+                let j= 0;
+                for(let ele of node.childNodes){
+                    if(!ele.value) continue;
+                    callStatk(data[i][j],ele,i,j)
+                    j++;
+                }
+                i++;
+               
+             }
+
+        }
+        
+        )
+        .catch(console.log)
+        
+
+    }
+     function render(){
+        if(alreadyClicked) return
+        console.log('hit')
+        const container  = document.getElementById('sudoku-conatiner');
+        const form = document.createElement('form');
+        form.id = "formdata"
+        for(let i= 1;i<=9;i++){
+            const row  =  document.createElement('div')
+            row.classList.add('row')
+            for(let j=1;j<=9;j++){
+                const element  = document.createElement('input')
+                element.id = `${i}${j}`
+                element.classList.add('element')
+                element.defaultValue = 0
+                row.appendChild(element)
+            }
+            form.appendChild(row)
+            
+        }
+        const btn = document.createElement('button')
+        btn.classList.add('submit-btn')
+        btn.type = "button"
+        btn.onclick = submitHandeler
+        btn.innerText = "Submit the SudoKu"
+        form.appendChild(btn)
+        container.appendChild(form)
+        alreadyClicked = true
+        }
+
+</script>
+<body>
+    
+    <h1>Sudoku Solver</h1>
+    <div id="sudoku-conatiner">
+        <h4>
+            SUDOKU QUESTION
+        </h4>
+        <button class="btn" type="button" onclick="render()">Give Question</button>
+        
+    </div>  
+   
+</body>
+</html>
